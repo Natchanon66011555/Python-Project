@@ -24,3 +24,13 @@ class PasswordManager:
                 return password
             attempts += 1
         return "Could not generate a unique password"
+    
+while True:
+    generator = PasswordGenerator()
+    manager = PasswordManager()
+
+    print("Generated Password:", manager.generate_unique_password(generator))
+
+    user_input = input("Generate another password? (yes/no): ")
+    if user_input.lower() != "yes":
+        break
