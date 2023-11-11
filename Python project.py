@@ -16,6 +16,16 @@ class PasswordGenerator:
         random.shuffle(password)
         return ''.join(password)
 
+class UsernameGenerator:
+    def __init__(self):
+        self.prefixes = ["user", "admin", "guest"]
+        self.suffixes = ["123", "456", "789"]
+
+    def generate_username(self):
+        prefix = random.choice(self.prefixes)
+        suffix = random.choice(self.suffixes)
+        return f"{prefix}_{suffix}"
+
 class PasswordManager:
     def __init__(self):
         self.generated_passwords = set()
@@ -30,19 +40,45 @@ class PasswordManager:
             attempts += 1
         return "Could not generate a unique password"
 
+def write_username_to_file(username, filename="usernames.txt"):
+    with open(filename, "a") as file:
+        file.write(username + "\n")
+
+def read_usernames_from_file(filename="usernames.txt"):
+    try:
+        with open(filename, "r") as file:
+            return set(file.read().splitlines())
+    except FileNotFoundError:
+        return set()
+
 # Main program loop
 while True:
-    generator = PasswordGenerator()
+    username_generator = UsernameGenerator()
+    password_generator = PasswordGenerator()
     manager = PasswordManager()
 
-    generated_password = manager.generate_unique_password(generator)
+    user_entered_username = input("Enter your own username: ")
+    generated_username = user_entered_username.strip()
+
+    existing_usernames = read_usernames_from_file()
+
+    while generated_username in existing_usernames:
+        print("Username already exists. Please enter a new one.")
+        user_entered_username = input("Enter your own username: ")
+        generated_username = user_entered_username.strip()
+
+    generated_password = manager.generate_unique_password(password_generator)
     print("Generated Password:", generated_password)
 
-    user_input = input("Generate another password? (yes/no): ")
-    if user_input.lower() != "yes":
-        confirm_input = input("Confirm your password (type the generated password): ")
-        if confirm_input == generated_password:
-            print("Password confirmed. Exiting...")
+    user_input = input("Confirm and store this set? (yes/no): ")
+    if user_input.lower() == "yes":
+        write_username_to_file(generated_username)
+        print("Username and password confirmed and stored. Exiting...")
+        break
+    else:
+        reset_input = input("Do you want to reset and generate a new set? (yes/no): ")
+        if reset_input.lower() != "yes":
+            print("Exiting without storing the set. You can run the program again to generate a new set.")
             break
         else:
-            print("Password mismatch. Please generate a new password.")
+            print("Generating a new set...")
