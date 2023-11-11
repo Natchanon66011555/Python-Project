@@ -76,9 +76,5 @@ while True:
         print("Username and password confirmed and stored. Exiting...")
         break
     else:
-        reset_input = input("Do you want to reset and generate a new set? (yes/no): ")
-        if reset_input.lower() != "yes":
-            print("Exiting without storing the set. You can run the program again to generate a new set.")
-            break
-        else:
-            print("Generating a new set...")
+        print("Confirmation failed. Please generate a new set.")
+
