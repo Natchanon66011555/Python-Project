@@ -49,6 +49,9 @@ def read_usernames_from_file(filename="usernames.txt"):
     except FileNotFoundError:
         return set()
 
+def is_weak_password(password):
+    return len(password) < 6 or not (any(char.isupper() for char in password) and any(char.isdigit() for char in password) and any(char in "!@#$%" for char in password))
+
 # Main program loop
 while True:
     username_generator = UsernameGenerator()
@@ -68,7 +71,16 @@ while True:
     create_own_password = input("Would you like to create your own password? (yes/no): ")
 
     if create_own_password.lower() == "yes":
-        user_password = input("Enter your password: ")
+        while True:
+            user_password = input("Enter your password: ")
+            if is_weak_password(user_password):
+                confirm_weak_password = input("Are you sure about this password? It is short or lacks complexity. (yes/no): ")
+                if confirm_weak_password.lower() == "yes":
+                    break
+                else:
+                    print("Please enter a stronger password.")
+            else:
+                break
     else:
         user_password = manager.generate_unique_password(password_generator)
 
@@ -81,4 +93,5 @@ while True:
         break
     else:
         print("Confirmation failed. Please generate a new set.")
+
 
