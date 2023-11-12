@@ -10,10 +10,8 @@ class PasswordGenerator:
     def generate_password(self):
         length = random.randint(self.min_password_length, self.max_password_length)
         password = []
-        password.append(random.choice(string.digits))
-        for _ in range(length - 1):
+        for _ in range(length):
             password.append(random.choice(self.characters))
-        random.shuffle(password)
         return ''.join(password)
 
 class UsernameGenerator:
@@ -67,8 +65,14 @@ while True:
         user_entered_username = input("Enter your own username: ")
         generated_username = user_entered_username.strip()
 
-    generated_password = manager.generate_unique_password(password_generator)
-    print("Generated Password:", generated_password)
+    create_own_password = input("Would you like to create your own password? (yes/no): ")
+
+    if create_own_password.lower() == "yes":
+        user_password = input("Enter your password: ")
+    else:
+        user_password = manager.generate_unique_password(password_generator)
+
+    print("Generated Password:", user_password)
 
     user_input = input("Confirm and store this set? (yes/no): ")
     if user_input.lower() == "yes":
