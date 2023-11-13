@@ -10,8 +10,10 @@ class PasswordGenerator:
     def generate_password(self):
         length = random.randint(self.min_password_length, self.max_password_length)
         password = []
-        for _ in range(length):
+        password.append(random.choice(string.digits))
+        for _ in range(length - 1):
             password.append(random.choice(self.characters))
+        random.shuffle(password)
         return ''.join(password)
 
 class UsernameGenerator:
@@ -49,9 +51,6 @@ def read_usernames_from_file(filename="usernames.txt"):
     except FileNotFoundError:
         return set()
 
-def is_weak_password(password):
-    return len(password) < 6 or not (any(char.isupper() for char in password) and any(char.isdigit() for char in password) and any(char in "!@#$%" for char in password))
-
 # Main program loop
 while True:
     username_generator = UsernameGenerator()
@@ -68,23 +67,8 @@ while True:
         user_entered_username = input("Enter your own username: ")
         generated_username = user_entered_username.strip()
 
-    create_own_password = input("Would you like to create your own password? (yes/no): ")
-
-    if create_own_password.lower() == "yes":
-        while True:
-            user_password = input("Enter your password: ")
-            if is_weak_password(user_password):
-                confirm_weak_password = input("Are you sure about this password? It is short or lacks complexity. (yes/no): ")
-                if confirm_weak_password.lower() == "yes":
-                    break
-                else:
-                    print("Please enter a stronger password.")
-            else:
-                break
-    else:
-        user_password = manager.generate_unique_password(password_generator)
-
-    print("Generated Password:", user_password)
+    generated_password = manager.generate_unique_password(password_generator)
+    print("Generated Password:", generated_password)
 
     user_input = input("Confirm and store this set? (yes/no): ")
     if user_input.lower() == "yes":
@@ -92,6 +76,10 @@ while True:
         print("Username and password confirmed and stored. Exiting...")
         break
     else:
-        print("Confirmation failed. Please generate a new set.")
-
+        reset_input = input("Do you want to reset and generate a new set? (yes/no): ")
+        if reset_input.lower() != "yes":
+            print("Exiting without storing the set. You can run the program again to generate a new set.")
+            break
+        else:
+            print("Generating a new set...")
 
